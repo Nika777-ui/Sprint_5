@@ -24,8 +24,8 @@ class LoginPageLocators:
 
 # Страница регистрации  
 class RegisterPageLocators:
-    NAME_INPUT = (By.XPATH, "//input[@name='name']")
-    EMAIL_INPUT = (By.XPATH, "//*[@id=\"root\"]/div/main/div/form/fieldset[2]/div/div/input")
+    NAME_INPUT = (By.XPATH, "//input[@name='name' and preceding-sibling::label[contains(text(),'Имя')]]")
+    EMAIL_INPUT = (By.XPATH, "//input[@name='name' and preceding-sibling::label[contains(text(),'Email')]]")
     PASSWORD_INPUT = (By.XPATH, "//input[@name='Пароль']")
     REGISTER_BUTTON = (By.XPATH, "//button[text()='Зарегистрироваться']")
     LOGIN_LINK = (By.XPATH, "//a[text()='Войти']")
@@ -33,13 +33,9 @@ class RegisterPageLocators:
 
 # Личный кабинет
 class ProfilePageLocators:
-    LOGOUT_BUTTON = (By.XPATH, "//*[@id=\"root\"]/div/main/div/nav/ul/li[3]/button")
+    LOGOUT_BUTTON = (By.XPATH, "//button[contains(text(), 'Выход')]")
     PROFILE_LINK = (By.XPATH, "//a[text()='Профиль']")
 
 # Восстановление пароля
 class PasswordRecoveryLocators:
     LOGIN_LINK = (By.XPATH, "//a[text()='Войти']")
-
-# Общие элементы
-class CommonLocators:
-    LOGO = (By.XPATH, "//div[contains(@class, 'logo')]")
