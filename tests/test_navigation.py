@@ -1,88 +1,83 @@
 import pytest
 from selenium.webdriver.common.by import By
-import time
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from helpers.login_helper import login
+from pages.locators import MainPageLocators, ProfilePageLocators
 
 class TestNavigation:
-    def _login(self, driver):
-        """Вспомогательный метод для входа"""
-        driver.find_element(By.XPATH, "//button[text()='Войти в аккаунт']").click()
-        
-        email_field = driver.find_element(By.XPATH, "//input[@name='name']")
-        password_field = driver.find_element(By.XPATH, "//input[@name='Пароль']")
-        
-        email_field.send_keys("Chasnaya_32@gmail.com")
-        password_field.send_keys("Chasnaya_32@gmail.com")
-        
-        driver.find_element(By.XPATH, "//button[text()='Войти']").click()
-        
-        time.sleep(2)
-
     def test_go_to_personal_account(self, driver):
-        try:
-            """Переход в личный кабинет"""
-            # Сначала выполняем вход
-            self._login(driver)
-            
-            # Переходим в личный кабинет
-            driver.find_element(By.XPATH, "//p[text()='Личный Кабинет']").click()
-            
-            # Ждем загрузки
-            time.sleep(2)
-            
-            # Проверяем что перешли в личный кабинет
-            logout_button = driver.find_element(By.XPATH, "//*[@id=\"root\"]/div/main/div/nav/ul/li[3]/button")
-            assert logout_button.is_displayed()
-        finally:
-            driver.quit()
+        """Переход в личный кабинет"""
+        # Используем вспомогательную функцию для входа
+        login(driver)
+        
+        # Переходим в личный кабинет
+        driver.find_element(*MainPageLocators.PERSONAL_ACCOUNT_BUTTON).click()
+        
+        # Ждем загрузки с явным ожиданием
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located(ProfilePageLocators.LOGOUT_BUTTON)
+        )
+        
+        # Проверяем что перешли в личный кабинет
+        assert driver.find_element(*ProfilePageLocators.LOGOUT_BUTTON).is_displayed()
 
     def test_go_from_account_to_constructor_via_button(self, driver):
-        try:
-            """Переход из личного кабинета в конструктор по кнопке"""
-            # Входим и переходим в личный кабинет
-            self._login(driver)
-            driver.find_element(By.XPATH, "//p[text()='Личный Кабинет']").click()
-            time.sleep(2)
-            
-            # Нажимаем кнопку "Конструктор"
-            driver.find_element(By.XPATH, "//p[text()='Конструктор']").click()
-            
-            # Проверяем что вернулись на главную
-            order_button = driver.find_element(By.XPATH, "//button[text()='Оформить заказ']")
-            assert order_button.is_displayed()
-        finally:
-            driver.quit()
+        """Переход из личного кабинета в конструктор по кнопке"""
+        # Входим и переходим в личный кабинет
+        login(driver)
+        driver.find_element(*MainPageLocators.PERSONAL_ACCOUNT_BUTTON).click()
+        
+        # Ждем загрузки личного кабинета
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located(ProfilePageLocators.LOGOUT_BUTTON)
+        )
+        
+        # Нажимаем кнопку "Конструктор"
+        driver.find_element(*MainPageLocators.CONSTRUCTOR_BUTTON).click()
+        
+        # Проверяем что вернулись на главную
+        order_button = WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located(MainPageLocators.ORDER_BUTTON)
+        )
+        assert order_button.is_displayed()
 
     def test_go_from_account_to_constructor_via_logo(self, driver):
-        try:
-            """Переход из личного кабинета в конструктор по логотипу"""
-            # Входим и переходим в личный кабинет
-            self._login(driver)
-            driver.find_element(By.XPATH, "//p[text()='Личный Кабинет']").click()
-            time.sleep(2)
-            
-            # Нажимаем на логотип
-            driver.find_element(By.XPATH, "//div[contains(@class, 'logo')]").click()
-            
-            # Проверяем что вернулись на главную
-            order_button = driver.find_element(By.XPATH, "//button[text()='Оформить заказ']")
-            assert order_button.is_displayed()
-        finally:
-            driver.quit()
+        """Переход из личного кабинета в конструктор по логотипу"""
+        # Входим и переходим в личный кабинет
+        login(driver)
+        driver.find_element(*MainPageLocators.PERSONAL_ACCOUNT_BUTTON).click()
+        
+        # Ждем загрузки личного кабинета
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located(ProfilePageLocators.LOGOUT_BUTTON)
+        )
+        
+        # Нажимаем на логотип
+        driver.find_element(By.XPATH, "//div[contains(@class, 'logo')]").click()
+        
+        # Проверяем что вернулись на главную
+        order_button = WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located(MainPageLocators.ORDER_BUTTON)
+        )
+        assert order_button.is_displayed()
 
     def test_logout(self, driver):
-        try:
-            """Выход из аккаунта"""
-            # Входим и переходим в личный кабинет
-            self._login(driver)
-            driver.find_element(By.XPATH, "//p[text()='Личный Кабинет']").click()
-            time.sleep(2)
-            
-            # Нажимаем кнопку "Выход"
-            driver.find_element(By.XPATH, "//*[@id=\"root\"]/div/main/div/nav/ul/li[3]/button").click()
-            time.sleep(2)
-            
-            # Проверяем что вернулись на страницу входа
-            login_button = driver.find_element(By.XPATH, "//button[text()='Войти']")
-            assert login_button.is_displayed()
-        finally:
-            driver.quit()
+        """Выход из аккаунта"""
+        # Входим и переходим в личный кабинет
+        login(driver)
+        driver.find_element(*MainPageLocators.PERSONAL_ACCOUNT_BUTTON).click()
+        
+        # Ждем загрузки личного кабинета
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located(ProfilePageLocators.LOGOUT_BUTTON)
+        )
+        
+        # Нажимаем кнопку "Выход"
+        driver.find_element(*ProfilePageLocators.LOGOUT_BUTTON).click()
+        
+        # Проверяем что вернулись на страницу входа
+        login_button = WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.XPATH, "//button[text()='Войти']"))
+        )
+        assert login_button.is_displayed()
