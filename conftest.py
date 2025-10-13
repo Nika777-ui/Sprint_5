@@ -1,6 +1,7 @@
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from data.urls import URLs  # Импортируем наши URL
 
 @pytest.fixture
 def driver():
@@ -14,8 +15,8 @@ def driver():
     driver = webdriver.Chrome(options=options)
     driver.maximize_window()
     
-    # Переходим на сайт Stellar Burgers
-    driver.get("https://stellarburgers.education-services.ru/")
+    # Переходим на сайт Stellar Burgers (используем URL из модуля)
+    driver.get(URLs.MAIN_PAGE)
     
     yield driver  # передаем драйвер в тест
     
